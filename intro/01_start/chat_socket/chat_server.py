@@ -29,6 +29,7 @@ def handle_client(client):
             if not message:
                 break
             broadcast(message, client)
+            print(f"[SERVER] Сообщение получено от: {message.decode('utf-8')}")
         except:
             break
 
