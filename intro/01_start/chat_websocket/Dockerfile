@@ -10,7 +10,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Копируем код и страницу
 COPY main.py .
-COPY index.html .
+COPY chat_client.html .
 
 # Открываем порт
 EXPOSE 5555
