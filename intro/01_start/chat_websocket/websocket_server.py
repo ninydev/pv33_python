@@ -22,7 +22,7 @@ async def handle_client(websocket):
             # Создаем задачу на рассылку всем
             if connected_clients:
                 # Рассылаем сообщение всем подключенным
-                await asyncio.wait([client.send(message) for client in connected_clients])
+                await asyncio.gather(*(client.send(message) for client in connected_clients))
 
     except websockets.exceptions.ConnectionClosed:
         print("[SERVER] Клиент отключился")
