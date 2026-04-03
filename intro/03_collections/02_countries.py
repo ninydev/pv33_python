@@ -101,9 +101,11 @@ def echo_menu():
     print("6. Показать все страны и столицы")
     print("7. Выйти")
 
+
 def exit_app():
     print("Программа завершена.")
     exit()
+
 
 def run_menu():
     echo_menu()
@@ -121,7 +123,6 @@ def run_menu():
 
     func = switcher.get(k, lambda: "Invalid choice")
     func()
-    run_menu()
 
 
 if __name__ == "__main__":
