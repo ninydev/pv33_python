@@ -1,4 +1,4 @@
-from .interfaces import HDMI, VGA
+from interfaces import HDMI, VGA
 
 class VGAToHDMIAdapter(HDMI):
     """

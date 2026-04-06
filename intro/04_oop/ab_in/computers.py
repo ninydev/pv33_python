@@ -1,5 +1,5 @@
-from .base import Computer
-from .interfaces import HDMI, VGA
+from base import Computer
+from interfaces import HDMI, VGA
 
 class MacBook(Computer, HDMI):
     """

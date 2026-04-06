@@ -1,5 +1,5 @@
-from .base import Monitor
-from .interfaces import HDMI, VGA
+from base import Monitor
+from interfaces import HDMI, VGA
 
 class SamsungMonitor(Monitor, HDMI):
     """

@@ -1,6 +1,6 @@
-from .monitors import SamsungMonitor, OldDellMonitor
-from .computers import MacBook, OldPCLaptop
-from .adapter import VGAToHDMIAdapter
+from monitors import SamsungMonitor, OldDellMonitor
+from computers import MacBook, OldPCLaptop
+from adapter import VGAToHDMIAdapter
 
 def main():
     print("--- 1. Пряме підключення через HDMI ---")
