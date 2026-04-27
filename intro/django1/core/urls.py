@@ -22,5 +22,7 @@ from core.views import hello_world
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('hello/', hello_world),
+
+    path('accounts/', include('accounts.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
 ]

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head><title>Профиль</title></head>
+<body>
+    <h2>Добро пожаловать в личный кабинет!</h2>
+
+    <div style="border: 1px solid #ccc; padding: 15px; max-width: 300px;">
+        <p><strong>Логин:</strong> {{ user.username }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Статус Админа:</strong> {{ user.is_superuser }}</p>
+    </div>
+
+    <br>
+
+    <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Выйти из системы</button>
+    </form>
+</body>
+</html>
