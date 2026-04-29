@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Редактировать пост</title>
+</head>
+<body>
+    <h1>Редактировать: {{ post.title }}</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Сохранить изменения</button>
+    </form>
+    <p><a href="{% url 'blog:post_detail' post.id %}">Отмена</a></p>
+</body>
+</html>
