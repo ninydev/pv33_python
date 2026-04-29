@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Блог - Список постов</title>
+</head>
+<body>
+    <h1>Лента всех постов</h1>
+
+    {% for post in page_obj %}
+        <div style="border: 1px solid #ccc; margin-bottom: 10px; padding: 10px;">
+            <h2><a href="{% url 'blog:post_detail' post.id %}">{{ post.title }}</a></h2>
+            <p>Автор: {{ post.author.username }} | Дата: {{ post.created_at }}</p>
+            <p>{{ post.content|truncatewords:30 }}</p>
+            <p>Лайков: {{ post.total_likes }} | Комментариев: {{ post.comments.count }}</p>
+        </div>
+    {% empty %}
+        <p>Постов пока нет.</p>
+    {% endfor %}
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; первая</a>
+                <a href="?page={{ page_obj.previous_page_number }}">предыдущая</a>
+            {% endif %}
+
+            <span class="current">
+                Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">следующая</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">последняя &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+</body>
+</html>

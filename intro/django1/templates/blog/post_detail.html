@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ post.title }}</title>
+</head>
+<body>
+    <p><a href="{% url 'blog:post_list' %}">Назад к списку</a></p>
+
+    <h1>{{ post.title }}</h1>
+    <p>Автор: {{ post.author.username }} | Дата: {{ post.created_at }}</p>
+    <div class="content">
+        {{ post.content|linebreaks }}
+    </div>
+    <p>Лайков: {{ post.total_likes }}</p>
+
+    <hr>
+    <h3>Комментарии ({{ comments.count }})</h3>
+    {% for comment in comments %}
+        <div style="border-bottom: 1px solid #eee; padding: 5px;">
+            <p><strong>{{ comment.author.username }}</strong> ({{ comment.created_at }}):</p>
+            <p>{{ comment.text }}</p>
+        </div>
+    {% empty %}
+        <p>Комментариев пока нет.</p>
+    {% endfor %}
+</body>
+</html>
