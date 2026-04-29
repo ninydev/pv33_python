@@ -11,7 +11,37 @@
     <div class="content">
         {{ post.content|linebreaks }}
     </div>
-    <p>Лайков: {{ post.total_likes }}</p>
+    <p>
+        Лайков: <span id="likes-count">{{ post.total_likes }}</span>
+        {% if user.is_authenticated %}
+            <button id="like-btn" data-id="{{ post.id }}" data-url="{% url 'blog:toggle_like' post.id %}" style="cursor: pointer; margin-left: 10px;">
+                {% if user in post.likes.all %}❤️ Убрать лайк{% else %}🤍 Поставить лайк{% endif %}
+            </button>
+        {% endif %}
+    </p>
+
+    {% if user.is_authenticated %}
+    <script>
+        document.getElementById('like-btn').addEventListener('click', function() {
+            const btn = this;
+            const url = btn.getAttribute('data-url');
+            
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('likes-count').innerText = data.likes_count;
+                btn.innerText = data.liked ? '❤️ Убрать лайк' : '🤍 Поставить лайк';
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+    {% endif %}
 
     {% if user == post.author %}
         <p>

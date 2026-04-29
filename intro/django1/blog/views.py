@@ -1,4 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
@@ -79,3 +81,23 @@ def post_delete(request, post_id):
         return redirect('blog:post_list')
     
     return render(request, 'blog/post_confirm_delete.html', {'post': post})
+
+@login_required
+@require_POST
+def toggle_like(request, post_id):
+    """
+    Ставит или убирает лайк под постом (AJAX).
+    """
+    post = get_object_or_404(Post, id=post_id)
+    
+    if post.likes.filter(id=request.user.id).exists():
+        post.likes.remove(request.user)
+        liked = False
+    else:
+        post.likes.add(request.user)
+        liked = True
+        
+    return JsonResponse({
+        'likes_count': post.total_likes(),
+        'liked': liked
+    })
