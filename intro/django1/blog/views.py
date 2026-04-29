@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from .models import Post, Comment
-from .forms import PostForm
+from .forms import PostForm, CommentForm
 
 def post_list(request):
     """
@@ -25,11 +25,29 @@ def post_detail(request, post_id):
     """
     post = get_object_or_404(Post, id=post_id)
     comments = post.comments.all().order_by('-created_at')
+    form = CommentForm()
 
     return render(request, 'blog/post_detail.html', {
         'post': post,
-        'comments': comments
+        'comments': comments,
+        'comment_form': form
     })
+
+@login_required
+@require_POST
+def add_comment(request, post_id):
+    """
+    Добавляет новый комментарий к посту.
+    """
+    post = get_object_or_404(Post, id=post_id)
+    form = CommentForm(request.POST)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.post = post
+        comment.author = request.user
+        comment.save()
+    
+    return redirect('blog:post_detail', post_id=post.id)
 
 @login_required
 def post_create(request):

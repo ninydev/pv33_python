@@ -9,7 +9,7 @@ urlpatterns = [
     path('<int:post_id>/', views.post_detail, name='post_detail'), # GET: Деталка поста + список комментов
 
     # # === 2. Маршруты интерактива (Залогиненные) ===
-    # path('<int:post_id>/comment/', views.add_comment, name='add_comment'), # POST: Добавить коммент
+    path('<int:post_id>/comment/', views.add_comment, name='add_comment'), # POST: Добавить коммент
     path('<int:post_id>/like/', views.toggle_like, name='toggle_like'),    # POST: Поставить/убрать лайк
 
     # # === 3. Маршруты Автора (CRUD) ===
