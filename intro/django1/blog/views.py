@@ -1,6 +1,8 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from .models import Post, Comment
+from .forms import PostForm
 
 def post_list(request):
     """
@@ -25,3 +27,20 @@ def post_detail(request, post_id):
         'post': post,
         'comments': comments
     })
+
+@login_required
+def post_create(request):
+    """
+    Создание нового поста. Доступно только авторизованным пользователям.
+    """
+    if request.method == 'POST':
+        form = PostForm(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.save()
+            return redirect('blog:post_list')
+    else:
+        form = PostForm()
+    
+    return render(request, 'blog/post_create.html', {'form': form})

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Создать новый пост</title>
+</head>
+<body>
+    <h1>Создать новый пост</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Опубликовать</button>
+    </form>
+    <p><a href="{% url 'blog:post_list' %}">Отмена</a></p>
+</body>
+</html>

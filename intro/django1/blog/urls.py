@@ -13,7 +13,7 @@ urlpatterns = [
     # path('<int:post_id>/like/', views.toggle_like, name='toggle_like'),    # POST: Поставить/убрать лайк
     #
     # # === 3. Маршруты Автора (CRUD) ===
-    # path('create/', views.post_create, name='post_create'),                # GET/POST: Создать
+    path('create/', views.post_create, name='post_create'),                # GET/POST: Создать
     # path('<int:post_id>/edit/', views.post_update, name='post_update'),    # GET/POST: Редактировать
     # path('<int:post_id>/delete/', views.post_delete, name='post_delete'),  # POST: Удалить
 ]
