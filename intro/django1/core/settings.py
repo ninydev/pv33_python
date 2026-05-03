@@ -119,3 +119,11 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
+
+# Storage Config
+STORAGE_BASE_DIR = BASE_DIR / 'storage'
+STORAGE_AVATAR_DIR = STORAGE_BASE_DIR / 'avatars'
+STORAGE_AVATAR_DIR.mkdir(parents=True, exist_ok=True)
+AVATAR_BASE_URL = f'{STATIC_URL}avatars/'
+
+
