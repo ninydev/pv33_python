@@ -55,7 +55,8 @@ def post_create(request):
     Создание нового поста. Доступно только авторизованным пользователям.
     """
     if request.method == 'POST':
-        form = PostForm(request.POST)
+        # Include request.FILES so uploaded images (thumbs) are processed
+        form = PostForm(request.POST, request.FILES)
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
@@ -76,7 +77,8 @@ def post_update(request, post_id):
         raise PermissionDenied
     
     if request.method == 'POST':
-        form = PostForm(request.POST, instance=post)
+        # Include request.FILES so uploaded images (thumbs) are processed when updating
+        form = PostForm(request.POST, request.FILES, instance=post)
         if form.is_valid():
             form.save()
             return redirect('blog:post_detail', post_id=post.id)
