@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>SSE Test</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        #log { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; background: #f9f9f9; }
+        .time { color: blue; }
+        .message { color: green; }
+        .status { color: gray; font-style: italic; }
+    </style>
+</head>
+<body>
+    <h1>Тест Server-Sent Events (SSE)</h1>
+    
+    <div id="status">Статус: Подключение...</div>
+    <br>
+    <div id="log"></div>
+    
+    <br>
+    <input type="text" id="msgInput" placeholder="Введите сообщение">
+    <button onclick="sendMessage()">Отправить себе</button>
+
+    <!-- Подключаем наш JS файл -->
+    <script src="{% static 'sse/sse.js' %}"></script>
+    
+    <script>
+        const logDiv = document.getElementById('log');
+        const statusDiv = document.getElementById('status');
+
+        function appendLog(html) {
+            const entry = document.createElement('div');
+            entry.innerHTML = `[${new Date().toLocaleTimeString()}] ${html}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        // Инициализируем SSE
+        initSSE("{% url 'sse_stream' %}", function(data) {
+            if (data.status === 'connected') {
+                statusDiv.innerText = `Статус: Подключен (ID: ${data.user_id})`;
+                appendLog(`<span class="status">Соединение установлено</span>`);
+            } else if (data.type === 'server_time') {
+                appendLog(`Время с сервера: <span class="time">${data.time}</span>`);
+            } else if (data.type === 'direct_message') {
+                appendLog(`Личное сообщение: <span class="message">${data.text}</span>`);
+            }
+        });
+
+        function sendMessage() {
+            const input = document.getElementById('msgInput');
+            const text = input.value;
+            fetch(`{% url 'sse_send' %}?msg=${encodeURIComponent(text)}`)
+                .then(r => r.json())
+                .then(d => {
+                    console.log("Message sent:", d);
+                    input.value = '';
+                });
+        }
+    </script>
+</body>
+</html>

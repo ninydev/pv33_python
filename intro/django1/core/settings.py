@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts',
     'blog',
+    'sse',
 ]
 
 MIDDLEWARE = [
@@ -117,6 +118,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'storage' / 'static',
+]
 
 # Media files (User uploads, like avatars)
 MEDIA_URL = '/storage/'
@@ -124,4 +130,15 @@ MEDIA_ROOT = BASE_DIR / 'storage'
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
+# Email config
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+# Для продакшена (потом замените на реальные данные):
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com' # или другой провайдер
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'your_email@gmail.com'
+# EMAIL_HOST_PASSWORD = 'your_app_password'
 

@@ -1,3 +1,4 @@
+from django.core.mail import send_mail
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
@@ -109,6 +110,10 @@ def toggle_like(request, post_id):
     Ставит или убирает лайк под постом (AJAX).
     """
     post = get_object_or_404(Post, id=post_id)
+
+    send_mail("Post Like",
+              f"User {request.user.username} liked your post: {post.title}",
+              "noreply@gmail.com", [post.author.email], fail_silently=False)
     
     if post.likes.filter(id=request.user.id).exists():
         post.likes.remove(request.user)
