@@ -122,6 +122,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 STATICFILES_DIRS = [
     BASE_DIR / 'storage' / 'static',
+    BASE_DIR / 'static'
 ]
 
 # Media files (User uploads, like avatars)
