@@ -1,18 +1,26 @@
 from django.db import models
 from django.conf import settings  # Правильный способ сослаться на кастомного юзера
+import os
+from uuid import uuid4
 
+# def post_thumbnail_upload_to(instance, filename):
+#     """Upload function that places thumbnails into a folder named by the Post id.
+#
+#     If the instance has no pk yet (not saved), return a temporary path. The
+#     Post.save override below will handle saving the file to the final folder
+#     once the instance has an id.
+#     """
+#     if instance.pk:
+#         return f'post_thumbnails/{instance.pk}/{filename}'
+#     return f'post_thumbnails/temp/{filename}'
 
 def post_thumbnail_upload_to(instance, filename):
-    """Upload function that places thumbnails into a folder named by the Post id.
-
-    If the instance has no pk yet (not saved), return a temporary path. The
-    Post.save override below will handle saving the file to the final folder
-    once the instance has an id.
-    """
-    if instance.pk:
-        return f'post_thumbnails/{instance.pk}/{filename}'
-    return f'post_thumbnails/temp/{filename}'
-
+    # Достаем расширение (например, jpg или png)
+    ext = filename.split('.')[-1]
+    # Генерируем уникальное имя файла
+    new_filename = f"{uuid4().hex}.{ext}"
+    # Сохраняем в папку media/post_thumbnails/
+    return os.path.join('post_thumbnails', new_filename)
 
 class Post(models.Model):
     # ForeignKey - это связь "Один ко многим". У поста один автор, но у автора много постов.

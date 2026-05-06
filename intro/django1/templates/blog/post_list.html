@@ -9,10 +9,7 @@
     {% endif %}
 <div class="row">
     {% for post in page_obj %}
-<div class="col-lg-4 col-md-6 mb-4">
     {% include 'blog/post_entry.html' with post=post %}
-</div>
-
     {% empty %}
         <p>Постов пока нет.</p>
     {% endfor %}

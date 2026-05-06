@@ -1,8 +1,12 @@
+{% load static %}
 <div class="col-lg-4 col-md-6 mb-4">
     <div class="post-entry-1 h-100">
-        <a href="single.html">
-            <img src="{{post.thumbnail}}" alt="Image"
-                 class="img-fluid">
+        <a href="{% url 'blog:post_detail' post.id %}">
+{% if post.thumbnail %}
+<img src="{{ post.thumbnail.url }}" alt="{{ post.title }}" class="img-fluid">
+            {% else %}
+    <img src="{% static 'images/img_1.jpg' %}" alt="Нет фото" class="img-fluid">
+{% endif %}
         </a>
         <div class="post-entry-1-contents">
 

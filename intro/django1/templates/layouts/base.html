@@ -27,18 +27,26 @@
     <!-- MAIN CSS -->
     <link rel="stylesheet" href="{% static '/css/style.css' %}">
 </head>
-<body>
+<body data-spy="scroll" data-target=".site-navbar-target" data-offset="300">
+
+<div class="site-wrap" id="home-section">
+
+
     {% include 'layouts/header.html' %}
 
     {% include 'layouts/cover.html' %}
 
+        <div class="site-section">
+      <div class="container">
     {% block content %}
     {% endblock %}
 
-    {% include 'layouts/footer.html'
-    with cover=cover
-    %}
+      </div>
+        </div>
 
+    {% include 'layouts/footer.html'%}
+
+</div>
 
     <script src="{% static '/js/jquery-3.3.1.min.js' %}"></script>
     <script src="{% static '/js/jquery-migrate-3.0.0.js' %}"></script>
