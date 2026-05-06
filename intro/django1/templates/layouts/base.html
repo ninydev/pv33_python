@@ -23,10 +23,14 @@
 <body>
     {% include 'layouts/header.html' %}
 
+    {% include 'layouts/cover.html' %}
+
     {% block content %}
     {% endblock %}
 
-    {% include 'layouts/footer.html' %}
+    {% include 'layouts/footer.html'
+    with cover=cover
+    %}
 
 
     <script src="{% static '/js/jquery-3.3.1.min.js' %}"></script>

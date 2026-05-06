@@ -18,7 +18,15 @@ def post_list(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'blog/post_list.html', {'page_obj': page_obj})
+    cover_data = {
+        'bg_image': '/static/images/hero_1.jpg',  # Или путь из статики/медиа, если нужно
+        'title': 'Лента постов',
+        'description': 'Самые свежие записи в нашем крутом блоге.'
+    }
+
+
+    return render(request, 'blog/post_list.html',
+                  {'page_obj': page_obj, "cover": cover_data})
 
 def post_detail(request, post_id):
     """
