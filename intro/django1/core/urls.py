@@ -32,6 +32,8 @@ urlpatterns = [
 
     path('blog/', include('blog.urls')),
     path('sse/', include('sse.urls')),
+
+    path('contact/', include('feedback.urls')),
 ]
 
 if settings.DEBUG:
