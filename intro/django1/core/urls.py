@@ -21,11 +21,8 @@ from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import path, include
 
-from core.views import hello_world
-
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('hello/', hello_world),
 
     path('accounts/', include('accounts.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
@@ -34,6 +31,8 @@ urlpatterns = [
     path('sse/', include('sse.urls')),
 
     path('contact/', include('feedback.urls')),
+
+    path('', include('pages.urls'))
 ]
 
 if settings.DEBUG:
