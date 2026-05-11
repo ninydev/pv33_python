@@ -6,6 +6,12 @@ from feedback.models import Feedback
 
 # Create your views here.
 def show_feedback(request):
+    cover_data = {
+        'bg_image': '/static/images/hero_1.jpg',  # Или путь из статики/медиа, если нужно
+        'title': 'Contact',
+        'description': 'Send some text to me.'
+    }
+
     action_message = ''
     if request.method == 'POST':
         feedback = Feedback()
@@ -20,4 +26,4 @@ def show_feedback(request):
         feedback.save()
     form = FeedbackForm()
     return render(request, 'pages/contact.html',
-                  {'form': form, 'message' :action_message})
+                  {'form': form, 'message' :action_message, "cover": cover_data})

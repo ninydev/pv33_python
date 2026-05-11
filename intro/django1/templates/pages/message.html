@@ -1,0 +1,12 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+
+    {% if message %}
+        <div class="alert alert-success row">
+            {{ message }}
+        </div>
+    {% endif %}
+
+
+{% endblock %}
