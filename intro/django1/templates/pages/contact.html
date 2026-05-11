@@ -3,18 +3,17 @@
 {% block content %}
 
 
+    {% if message %}
+        <div class="alert alert-success row">
+            {{ message }}
+        </div>
+    {% endif %}
 <div class="row">
-    {% for post in page_obj %}
-    {% include 'blog/post_entry.html' with post=post %}
-    {% empty %}
-
-        <form method="post">
+    <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Send</button>
     </form>
-
-    {% endfor %}
 </div>
 
 {% endblock %}

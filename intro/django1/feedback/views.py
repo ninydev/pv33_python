@@ -6,6 +6,7 @@ from feedback.models import Feedback
 
 # Create your views here.
 def show_feedback(request):
+    action_message = ''
     if request.method == 'POST':
         feedback = Feedback()
         feedback.firstName = request.POST['firstName']
@@ -15,6 +16,8 @@ def show_feedback(request):
         feedback.message = request.POST['message']
         if request.user.is_authenticated:
             feedback.user = request.user
+        action_message = 'Feedback submitted successfully!'
         feedback.save()
     form = FeedbackForm()
-    return render(request, 'pages/contact.html', {'form': form})
+    return render(request, 'pages/contact.html',
+                  {'form': form, 'message' :action_message})
