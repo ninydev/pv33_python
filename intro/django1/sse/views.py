@@ -2,11 +2,13 @@ import json
 import time
 import queue
 import threading
+import redis
 from datetime import datetime
 from django.http import StreamingHttpResponse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.conf import settings
 
 # Глобальная коллекция соединений: {user_id: [Queue, ...]}
 # Используем Lock для потокобезопасности при работе со словарем
@@ -70,8 +72,31 @@ def broadcast_time():
                 for q in user_connections[uid]:
                     q.put(msg)
 
-# Запуск фонового таймера
+def listen_redis_messages():
+    """
+    Фоновый процесс: слушает сообщения из Redis Pub/Sub и пересылает их клиентам SSE.
+    Это необходимо, потому что Celery Worker - это другой процесс, и он не имеет
+    доступа к переменной `user_connections` этого процесса Django.
+    """
+    r = redis.Redis.from_url(settings.CELERY_BROKER_URL)
+    pubsub = r.pubsub()
+    pubsub.subscribe('sse_messages')
+    
+    for message in pubsub.listen():
+        if message['type'] == 'message':
+            try:
+                data = json.loads(message['data'].decode('utf-8'))
+                
+                with connections_lock:
+                    for uid in list(user_connections.keys()):
+                        for q in user_connections[uid]:
+                            q.put(data)
+            except Exception as e:
+                print(f"Error parsing redis message: {e}")
+
+# Запуск фонового таймера и слушателя Redis
 threading.Thread(target=broadcast_time, daemon=True).start()
+threading.Thread(target=listen_redis_messages, daemon=True).start()
 
 def sse_test_page(request):
     """Страница для отображения работы SSE"""

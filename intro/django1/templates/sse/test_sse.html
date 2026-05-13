@@ -10,6 +10,7 @@
         .time { color: blue; }
         .message { color: green; }
         .status { color: gray; font-style: italic; }
+        .alert { color: red; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -46,6 +47,9 @@
                 appendLog(`Время с сервера: <span class="time">${data.time}</span>`);
             } else if (data.type === 'direct_message') {
                 appendLog(`Личное сообщение: <span class="message">${data.text}</span>`);
+            } else if (data.type === 'alert_update') {
+                // Добавлена обработка сообщения от нашей фоновой задачи
+                appendLog(`[ФОНОВАЯ ЗАДАЧА]: <span class="alert">${data.message}</span>`);
             }
         });
 

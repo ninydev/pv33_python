@@ -42,7 +42,9 @@ INSTALLED_APPS = [
     'sse',
     'feedback',
     'pages',
-    'newsletters'
+    'newsletters',
+    'uaalerts',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -144,4 +146,110 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # EMAIL_USE_TLS = True
 # EMAIL_HOST_USER = 'your_email@gmail.com'
 # EMAIL_HOST_PASSWORD = 'your_app_password'
+
+# ---------------------------------------------------------------------------
+# Celery configuration
+# ---------------------------------------------------------------------------
+#
+# Це блок конфігурації Celery — асинхронного таск-менеджера, який використовується
+# для виконання фонoвих (background) задач у вашому проекті Django.
+#
+# Коротко:
+# - Broker (брокер повідомлень) — місце, куди Celery поміщає завдання (tasks).
+#   У цьому проєкті використовується Redis. Також можна використовувати RabbitMQ.
+# - Result backend — куди Celery зберігає результати виконання задач (опційно).
+# - Serializer/accept_content — як серіалізуються/десеріалізуються задачі і
+#   їхні аргументи/результати.
+# - Beat (розклад) — періодичні завдання. Тут є приклад простого розкладу,
+#   але також в `INSTALLED_APPS` доданий `django_celery_beat` — це дає змогу
+#   зберігати розклад у базі даних і керувати ним через адмінку Django.
+#
+# Важливі зауваження по налаштуванню:
+# - У production краще зберігати URL брокера і бекенду в змінних оточення
+#   (наприклад, через os.environ або django-environ) і не хардкодити їх тут.
+# - Переконайтеся, що Redis (або інший брокер) запущено і доступно за вказаним
+#   адресом. Для Redis за замовчуванням: redis-server запущений на localhost:6379.
+# - `CELERY_TIMEZONE` краще синхронізувати з `TIME_ZONE` Django (в цьому файлі
+#   використовується змінна `TIME_ZONE`).
+
+# Адреса брокера (тут — Redis). Формат: redis://[:password]@host:port/db
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+
+# Де зберігати результати виконання задач. Може бути Redis, база даних тощо.
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+# Які формати вмісту Celery приймає. Для безпеки — конкретно вказуємо 'json'.
+CELERY_ACCEPT_CONTENT = ['json']
+
+# Як серіалізувати таски/аргументи (json зазвичай достатньо і безпечніше, ніж pickle).
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+# Таймзона для Celery. Використовуємо ту ж змінну, що й Django: TIME_ZONE.
+CELERY_TIMEZONE = TIME_ZONE
+
+# ---------------------------------------------------------------------------
+# Планувальник періодичних задач (Celery Beat)
+# ---------------------------------------------------------------------------
+#
+# Тут визначено словник `CELERY_BEAT_SCHEDULE` — простий спосіб додати періодичні
+# задачі без зовнішніх інструментів. Ключ — унікальна назва завдання; значення —
+# словник з полями `task` (повний шлях до таска у форматі "app.module.func") і
+# `schedule` (інтервал або об'єкт із celery.schedules, наприклад `crontab`).
+#
+# Приклад доступних значень для `schedule`:
+# - число в секундах (як в цьому прикладі): 20.0
+# - datetime.timedelta(...) або об'єкт celery.schedules.schedule
+# - celery.schedules.crontab(minute='*/5') — кожні 5 хвилин
+#
+# Якщо ви хочете керувати розкладом через адмінку (зміна інтервалів без перезапуску),
+# використовуйте `django-celery-beat`. Ви вже додали його в `INSTALLED_APPS` —
+# щоб beat читав розклад з бази даних, запускайте beat з параметром scheduler:
+#   celery -A core beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+#
+# Приклад простого словника розкладу (залишився ваш варіант):
+CELERY_BEAT_SCHEDULE = {
+    'check-alerts-every-20-seconds': {
+        # Повний шлях до функції або таска, який потрібно виконувати.
+        # У вашому проєкті це означає: файл uaalerts/tasks.py, функція check_alerts
+        'task': 'uaalerts.tasks.check_alerts',
+        # Інтервал у секундах. Можна замінити на crontab або timedelta.
+        'schedule': 20.0,
+    },
+}
+
+# ---------------------------------------------------------------------------
+# Як має виглядати таск в додатку `uaalerts`:
+# ---------------------------------------------------------------------------
+# У файлі `uaalerts/tasks.py` має бути визначений таск приблизно так:
+#
+# from celery import shared_task
+#
+# @shared_task
+# def check_alerts():
+#     """Перевірка алертів і надсилання повідомлень/логування/інше."""
+#     # ваша логіка тут
+#     return True
+#
+# Виклик цього таска через Celery (не напряму у синхронному коді) буде виглядати так:
+#     from uaalerts.tasks import check_alerts
+#     check_alerts.delay()   # відправить таск в брокер
+#
+# ---------------------------------------------------------------------------
+# Команди для запуску (локально):
+# ---------------------------------------------------------------------------
+# 1) Переконайтесь, що Redis запущений.
+# 2) Запустіть worker:
+#    celery -A core worker -l info
+# 3) Запустіть beat (планувальник):
+#    celery -A core beat -l info
+#
+# Якщо використовуєте `django-celery-beat` (рекомендовано):
+#    celery -A core beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+#
+# Можна також запускати worker і beat у різних процесах (рекомендується для production).
+#
+# Docker / docker-compose: зазвичай ви додаєте сервіси для redis, celery-worker та
+# celery-beat у `docker-compose.yml` і пов'язуєте їх з мережею/томами проєкту.
+# ---------------------------------------------------------------------------
 
